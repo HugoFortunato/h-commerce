@@ -32,10 +32,23 @@ export const useCartStore = create<CartState>()(
           }
         }),
 
-      removeFromCart: (product: ProductType) =>
-        set((state) => ({
-          cart: state.cart.filter((p) => p.id !== product.id),
-        })),
+      removeFromCart: (item: ProductType) =>
+        set((state) => {
+          const existingProduct = state.cart.find((p) => p.id === item.id);
+
+          if (existingProduct && existingProduct.quantity! > 1) {
+            const updatedCart = state.cart.map((p) => {
+              if (p.id === item.id) {
+                return { ...p, quantity: p.quantity! - 1 };
+              }
+              return p;
+            });
+            return { cart: updatedCart };
+          } else {
+            const filteredCart = state.cart.filter((p) => p.id !== item.id);
+            return { cart: filteredCart };
+          }
+        }),
       toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
     }),
     { name: "cart-storage" }
