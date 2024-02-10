@@ -1,7 +1,7 @@
-import AddCart from "@/app/components/AddCart";
-import ProductImage from "@/app/components/ProductImage";
-import { formatPrice } from "@/app/lib/utils";
-import Stripe from "stripe";
+import AddCart from '@/app/components/AddCart';
+import ProductImage from '@/app/components/ProductImage';
+import { formatPrice } from '@/app/lib/utils';
+import Stripe from 'stripe';
 
 type ProductPageProps = {
   params: {
@@ -11,10 +11,11 @@ type ProductPageProps = {
 
 async function getProduct(id: string) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2022-11-15",
+    apiVersion: '2022-11-15',
   });
 
   const produto = await stripe.products.retrieve(id);
+
   const price = await stripe.prices.list({
     product: produto.id,
   });

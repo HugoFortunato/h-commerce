@@ -1,10 +1,12 @@
-"use client";
-import { useCartStore } from "@/store";
-import Image from "next/image";
-import { formatPrice } from "../lib/utils";
+'use client';
+
+import { useCartStore } from '@/store';
+import Image from 'next/image';
+import { formatPrice } from '../lib/utils';
 
 export default function CartDrawer() {
   const useStore = useCartStore();
+
   return (
     <div
       onClick={() => useStore.toggleCart()}

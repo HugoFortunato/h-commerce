@@ -1,16 +1,17 @@
-import prisma from "../../../lib/prisma";
-import { IncomingHttpHeaders } from "http";
-import { headers } from "next/headers";
-import { NextResponse } from "next/server";
-import { Webhook, WebhookRequiredHeaders } from "svix";
+import prisma from '../../../lib/prisma';
+import { IncomingHttpHeaders } from 'http';
+import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
+import { Webhook, WebhookRequiredHeaders } from 'svix';
+import Stripe from 'stripe';
 
-const webhookSecret = process.env.CLERK_WEBHOOK_SECRET || "";
+const webhookSecret = process.env.CLERK_WEBHOOK_SECRET || '';
 
-type EventType = "user.created" | "user.updated" | "*";
+type EventType = 'user.created' | 'user.updated' | '*';
 
 type Event = {
   data: EventDataType;
-  object: "event";
+  object: 'event';
   type: EventType;
 };
 
@@ -32,9 +33,9 @@ export async function handler(request: Request) {
   const payload = await request.json();
   const headersList = headers();
   const heads = {
-    "svix-id": headersList.get("svix-id"),
-    "svix-timestamp": headersList.get("svix-timestamp"),
-    "svix-signature": headersList.get("svix-signature"),
+    'svix-id': headersList.get('svix-id'),
+    'svix-timestamp': headersList.get('svix-timestamp'),
+    'svix-signature': headersList.get('svix-signature'),
   };
   const wh = new Webhook(webhookSecret);
   let evt: Event | null = null;
@@ -50,7 +51,7 @@ export async function handler(request: Request) {
   }
 
   const eventType: EventType = evt.type;
-  if (eventType === "user.created" || eventType === "user.updated") {
+  if (eventType === 'user.created' || eventType === 'user.updated') {
     const {
       id,
       first_name,
@@ -59,6 +60,15 @@ export async function handler(request: Request) {
       primary_email_address_id,
       ...attributes
     } = evt.data;
+
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: '2022-11-15',
+    });
+
+    const customer = await stripe.customers.create({
+      name: `${first_name} ${last_name}`,
+      email: email_addresses ? email_addresses[0].email_address : '',
+    });
 
     await prisma.user.upsert({
       where: { externalId: id as string },
