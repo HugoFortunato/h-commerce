@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { ProductType } from "./app/types/ProductType";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { ProductType } from './app/types/ProductType';
 
 type CartState = {
   cart: ProductType[];
@@ -8,6 +8,10 @@ type CartState = {
   removeFromCart: (product: ProductType) => void;
   isOpen: boolean;
   toggleCart: () => void;
+  onCheckout: string;
+  setCheckout: (checkout: string) => void;
+  paymentIntent: string;
+  setPaymentIntent: (paymentIntent: string) => void;
 };
 
 export const useCartStore = create<CartState>()(
@@ -50,7 +54,12 @@ export const useCartStore = create<CartState>()(
           }
         }),
       toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
+      onCheckout: 'cart',
+      setCheckout: (checkout: string) => set({ onCheckout: checkout }),
+      paymentIntent: '',
+      setPaymentIntent: (paymentIntent: string) =>
+        set({ paymentIntent: paymentIntent }),
     }),
-    { name: "cart-storage" }
+    { name: 'cart-storage' }
   )
 );

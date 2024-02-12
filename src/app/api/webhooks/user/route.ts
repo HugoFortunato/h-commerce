@@ -74,6 +74,7 @@ export async function handler(request: Request) {
       where: { externalId: id as string },
       create: {
         externalId: id as string,
+        stripeCustomerId: customer.id,
         attributes,
       },
       update: { attributes },
