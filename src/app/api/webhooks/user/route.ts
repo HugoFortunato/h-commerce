@@ -29,7 +29,7 @@ type EmailAddressType = {
   email_address: string;
 };
 
-export async function handler(request: Request) {
+export async function POST(request: Request) {
   const payload = await request.json();
   const headersList = headers();
   const heads = {
@@ -83,7 +83,3 @@ export async function handler(request: Request) {
 
   return NextResponse.json({}, { status: 200 });
 }
-
-export const GET = handler;
-export const POST = handler;
-export const PUT = handler;
